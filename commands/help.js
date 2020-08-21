@@ -11,10 +11,11 @@ module.exports = {
 		const { commands } = message.client;
 
 		if (!args.length) {
+            
 			data.push('Aqui está uma lista de todos os meus comandos:');
 			data.push(commands.map(command => command.name).join(', '));
 			data.push(`\nVocê pode enviar \`${prefix}help [nome do comando]\` para mais informações!`);
-
+            
 			return message.author.send(data, { split: true })
 				.then(() => {
 					if (message.channel.type === 'dm') return;
@@ -32,7 +33,7 @@ module.exports = {
 		if (!command) {
 			return message.reply('Esse não é um comando válido!');
 		}
-
+        data.push(`\``);
 		data.push(`**Nome:** ${command.name}`);
 
 		if (command.aliases) data.push(`**Sinônimos:** ${command.aliases.join(', ')}`);
@@ -40,7 +41,7 @@ module.exports = {
 		if (command.usage) data.push(`**Uso:** ${prefix}${command.name} ${command.usage}`);
 
 		data.push(`**Cooldown:** ${command.cooldown || 3} second(s)`);
-
+        data.push(`\``);
 		message.channel.send(data, { split: true });
 
 
