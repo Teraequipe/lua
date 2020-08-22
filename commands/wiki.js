@@ -29,12 +29,17 @@ module.exports = {
 		const response = responses[Math.floor(Math.random() * responses.length)];
 
 		try {
-            
+            if(page.thumbnail != null){
+                page.thumbnail = 'https:'+page.thumbnail.url;
+            }
+            else{
+                page.thumbnail = 'https://i.imgur.com/lBalNu8.png';
+            }
 			const pageEmbed = new Discord.MessageEmbed()
 				.setColor('#0099ff')
 				.setTitle(response + '\n' + page.title)
 				.setDescription(page.description)
-				.setImage('https:'+page.thumbnail.url);
+				.setImage(page.thumbnail);
 
 			message.channel.send(pageEmbed);
 
