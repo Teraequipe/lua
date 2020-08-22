@@ -1,8 +1,8 @@
 module.exports = {
 	name: 'abraço',
     description: 'mandar abraço',
-    aliases: ['mandaabraço'],
-    usage: '<user> <role>',
+    aliases: ['mandaabraço','tmj'],
+    usage: '<user>',
     args: true,
     
 	execute(message, args) {

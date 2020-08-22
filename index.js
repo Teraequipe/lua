@@ -95,6 +95,6 @@ client.on('guildMemberAdd', async member => {
 	];
 
 	const response = responses[Math.floor(Math.random() * responses.length)];
-
-	channel.send(response);
+	const welcome = `\n\nMeu nome é *Lua!* Estou aqui para te auxiliar, você pode falar comigo utilizando o prefixo *${prefix}*.\nAproveite!`
+	channel.send(response + welcome);
 });
