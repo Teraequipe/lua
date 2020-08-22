@@ -1,7 +1,7 @@
 module.exports = {
 	name: 'd20',
     description: 'rola um d20',
-    usage: '<user> <role>',
+    usage: '',
     args: false,
     cooldown: 5,
 	execute(message, args) {

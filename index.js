@@ -90,6 +90,11 @@ client.on('guildMemberAdd', async member => {
 	const channel = member.guild.channels.cache.find(ch => ch.name === 'geral');
 	if (!channel) return;
 
+	const responses = [
+		`Olá, ${member}! A casa é sua :blush:  `,
+	];
 
-	channel.send(`Seja bem vinde, ${member}!`);
+	const response = responses[Math.floor(Math.random() * responses.length)];
+
+	channel.send(response);
 });
