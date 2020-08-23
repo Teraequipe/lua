@@ -37,8 +37,13 @@ module.exports = {
 			];
 
 			const response = responses[Math.floor(Math.random() * responses.length)];
-
-			message.channel.send(response + '\n' + res.data[Math.floor(Math.random() * res.data.length)].url);
+            try {
+                message.channel.send(response + '\n' + res.data[Math.floor(Math.random() * res.data.length)].url);
+                
+            } catch (error) {
+                console.log(error);
+                message.channel.send("Não consegui carregar esse gif :(")
+            }
 		});
 
 	},
