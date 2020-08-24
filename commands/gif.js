@@ -19,31 +19,32 @@ module.exports = {
 		const busca = args.join(' ');
 
 		// Search with options using callback
-		await giphy.search({
-            q: busca,
-            limit: 5,
+		giphy.search({
+			q: busca,
+			limit: 5,
 			rating: 'g',
 		}, function(err, res) {
-			console.log(res);// Res contains gif data!
+			// console.log(res);// Res contains gif data!
 
 
 			const responses = [
 				`${message.author.username}, olha seu gif aqui`,
 				`${message.author.username} tá na mão`,
 				`${message.author.username}, vc que manda`,
-                `${message.author.username}, gostasse?`,
-                
+				`${message.author.username}, gostasse?`,
+
 
 			];
 
 			const response = responses[Math.floor(Math.random() * responses.length)];
-            try {
-                message.channel.send(response + '\n' + res.data[Math.floor(Math.random() * res.data.length)].url);
-                
-            } catch (error) {
-                console.log(error);
-                message.channel.send("Não consegui carregar esse gif :(")
-            }
+			try {
+				message.channel.send(response + '\n' + res.data[Math.floor(Math.random() * res.data.length)].url);
+
+			}
+			catch (error) {
+				console.log(error);
+				message.channel.send('Não consegui carregar esse gif :(');
+			}
 		});
 
 	},

@@ -4,6 +4,6 @@ module.exports = {
 	usage: '<user> <role>',
 	args: false,
 	execute(message, args) {
-		message.channel.send(`Oi ${message.author.username}`);
+		message.channel.send(`Oi ${message.author}`);
 	},
 };

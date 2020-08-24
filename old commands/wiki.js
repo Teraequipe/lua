@@ -4,7 +4,7 @@ const querystring = require('querystring');
 
 module.exports = {
 	name: 'wiki',
-	aliases: ['pesquisa', 'search', 'busca', 'wikipedia', 'info'],
+	aliases: ['pesquisa', 'search', 'busca', 'info'],
 	description: 'Retorna uma busca do wikipédia',
 	usage: '',
 	args: true,
