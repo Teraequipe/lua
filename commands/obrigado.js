@@ -21,8 +21,10 @@ module.exports = {
 			];
 
 			const response = responses[Math.floor(Math.random() * responses.length)];
-
+			console.log(message)
+			message.delete({timeout: 10});
 			message.channel.send(response);
+			//message.channel.delete(1);
 		}
 		else{
 			message.channel.send('Você precisa marcar alguém...');

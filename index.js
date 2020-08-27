@@ -5,7 +5,7 @@ const fs = require('fs');
 const Discord = require('discord.js');
 
 // require config.json credenciais
-const { prefix, token } = require('./config.json');
+const { prefix, token, wit_key } = require('./config.json');
 // create a new Discord client
 const client = new Discord.Client();
 
@@ -24,7 +24,6 @@ for (const file of commandFiles) {
 const cooldowns = new Discord.Collection();
 
 
-
 client.once('ready', () => {
 	console.log('Ready!');
 });
@@ -37,10 +36,10 @@ client.on('message', message => {
 	console.log(message.content);
 
 	if (!message.content.startsWith(prefix) || message.author.bot) return;
-	
+
 	const args = message.content.slice(prefix.length).trim().split(' ');
 	const commandName = args.shift().toLowerCase();
-	
+
 	const command = client.commands.get(commandName)
 		|| client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
 
@@ -59,28 +58,29 @@ client.on('message', message => {
 	if (!cooldowns.has(command.name)) {
 		cooldowns.set(command.name, new Discord.Collection());
 	}
-	
+
 	const now = Date.now();
 	const timestamps = cooldowns.get(command.name);
 	const cooldownAmount = (command.cooldown || 3) * 1000;
-	
+
 	if (timestamps.has(message.author.id)) {
 		if (timestamps.has(message.author.id)) {
 			const expirationTime = timestamps.get(message.author.id) + cooldownAmount;
-		
+
 			if (now < expirationTime) {
 				const timeLeft = (expirationTime - now) / 1000;
 				return message.reply(`Espere mais ${timeLeft.toFixed(1)} segundo(s) antes de usar o comando \`${command.name}\` novamente.`);
 			}
 		}
-		
+
 	}
 	timestamps.set(message.author.id, now);
 	setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
-	
+
 	try {
 		command.execute(message, args);
-	} catch (error) {
+	}
+	catch (error) {
 		console.error(error);
 		message.reply('Hmmm, não identifiquei o seu comando :sad:!');
 	}
@@ -95,6 +95,17 @@ client.on('guildMemberAdd', async member => {
 	];
 
 	const response = responses[Math.floor(Math.random() * responses.length)];
-	const welcome = `\n\nMeu nome é *Lua!* Estou aqui para te auxiliar, você pode falar comigo utilizando o prefixo *${prefix}*.\nAproveite!`
+	const welcome = `\n\nMeu nome é *Lua!* Estou aqui para te auxiliar, você pode falar comigo utilizando o prefixo *${prefix}*.\nAproveite!`;
 	channel.send(response + welcome);
 });
+
+/*
+const { Wit, log } = require('node-wit');
+
+const wclient = new Wit({
+	accessToken: wit_key,
+	logger: new log.Logger(log.DEBUG), // optional
+});
+console.log(wclient.message('set an alarm tomorrow at 7am'));
+
+*/

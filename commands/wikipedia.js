@@ -11,6 +11,7 @@ module.exports = {
 
 	async execute(message, args) {
 		const busca = args.join(' ');
+		console.log(busca)
 		const pageUrl = 'https://pt.wikipedia.org/w/api.php';
 
 		try{

@@ -17,11 +17,11 @@ module.exports = {
 				`${message.author.username} gostaria de pedir para ${nome} caçar o que fazer`,
 				`${message.author.username} pediu pra eu falar muuuuuuu para ${nome} entender`,
 				`${nome} 5 minutos de briga sem perder a amizade com ${message.author.username}, topa?`,
-
+				`alguem te xingou aqui ${nome}`,
 			];
 
 			const response = responses[Math.floor(Math.random() * responses.length)];
-
+			message.delete({timeout: 10});
 			message.channel.send(response);
 		}
 		else{
