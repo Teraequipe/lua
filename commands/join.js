@@ -1,7 +1,9 @@
-const { prefix } = require('../config.json');
+const { prefix, wit_key } = require('../config.json');
 const Discord = require('discord.js');
 const ffmpeg = require('ffmpeg');
 const fs = require('fs');
+const util = require('util');
+const path = require('path');
 const { Readable, Transform } = require('stream');
 
 
@@ -18,15 +20,13 @@ module.exports = {
 		const comando = message.content.slice(prefix.length).trim().split(' ');
 	    const commandName = comando.shift().toLowerCase();
 
-		console.log(commandName);
+		// console.log(commandName);
 		if (!message.member.voice.channelID) {
 			message.reply('Opa! Você precisa estar em um canal de voz :headphones: ');
 			return;
 		}
 
 		if (commandName === 'join') {
-
-
 			if (!message.guild.me.voice.channel) {
 				// await message.member.voice.channel.join();
 				message.reply('A Mãe tá on!');
@@ -37,7 +37,6 @@ module.exports = {
 			}
 		}
 		else if(commandName === 'leave') {
-
 			if (message.guild.me.voice.channel) {
 				message.guild.me.voice.channel.leave();
 				message.reply('Desconectado.');
@@ -105,16 +104,17 @@ module.exports = {
 						try {
 							convert_audio(infile, outfile, async () => {
 								console.log('convertemos');
+								let out = await transcribe_witai(outfile);
+                           		console.log(out)
+                            	await message.channel.send(out);
 							});
 						}
 
 
 						catch (e) {
 							console.log('tmpraw rename: ' + e);
-							if (!val.debug) {
-								fs.unlinkSync(infile);
-								fs.unlinkSync(outfile);
-							}
+						
+							
 						}
 
 					}
@@ -148,12 +148,21 @@ async function playFile(connection, filePath) {
 	});
 }
 
+// var FFmpeg = require('fluent-ffmpeg');
 
-// converter audio
+// function convert_audio(infile, outfile){
+// 	streamin = fs.createReadStream(infile);
+// 	streamout = fs.createWriteStream(outfile);
+// 	var command = FFmpeg({
+// 		source: streamin
+// 	}).addOption('-ac', 1)
+// 	.audioFrequency(16000)
+// 	.saveToFile(streamout);
+// }
 async function convert_audio(infile, outfile, cb) {
 	try {
-		const SoxCommand = require('sox-audio');
-		const command = newFunction(SoxCommand);
+		let SoxCommand = require('sox-audio');
+		let command = SoxCommand();
 		streamin = fs.createReadStream(infile);
 		streamout = fs.createWriteStream(outfile);
 		command.input(streamin)
@@ -187,27 +196,15 @@ async function convert_audio(infile, outfile, cb) {
 	}
 }
 
-
-function newFunction(SoxCommand) {
-	return SoxCommand();
-}
-/*
-const { Wit, log } = require('node-wit');
-const {wit_key} = require('../config.json');
-const wclient = new Wit({
-	accessToken: wit_key,
-	logger: new log.Logger(log.DEBUG), // optional
-});
-console.log(wclient.message('set an alarm tomorrow at 7am'));
-*/
-/*
+// conexão com o witai
 let witAI_lastcallTS = null;
-// const witClient = require('node-wit');
+const witClient = require('node-witai-speech');
 async function transcribe_witai(file) {
+	console.log('transcribe')
     try {
         // ensure we do not send more than one request per second
         if (witAI_lastcallTS != null) {
-            let now = Math.floor(new Date());
+            let now = Math.floor(new Date());    
             while (now - witAI_lastcallTS < 1000) {
                 console.log('sleep')
                 await sleep(100);
@@ -222,7 +219,7 @@ async function transcribe_witai(file) {
         console.log('transcribe_witai')
         const extractSpeechIntent = util.promisify(witClient.extractSpeechIntent);
         var stream = fs.createReadStream(file);
-        const output = await extractSpeechIntent(witAPIKEY, stream, "audio/wav")
+        const output = await extractSpeechIntent(wit_key, stream, "audio/wav")
         witAI_lastcallTS = Math.floor(new Date());
         console.log(output)
         stream.destroy()
@@ -233,5 +230,40 @@ async function transcribe_witai(file) {
         return output;
     } catch (e) { console.log('transcribe_witai 851:' + e) }
 }
+//////////////////////////////////////////
+//////////////////////////////////////////
+//////////////////////////////////////////
 
-*/
+
+
+// funções de limpar o cache
+function necessary_dirs() {
+	if (!fs.existsSync('./temp/')) {
+		fs.mkdirSync('./temp/');
+	}
+	if (!fs.existsSync('./data/')) {
+		fs.mkdirSync('./data/');
+	}
+}
+necessary_dirs();
+
+
+function clean_temp() {
+	const dd = './temp/';
+	fs.readdir(dd, (err, files) => {
+		if (err) throw err;
+
+		for (const file of files) {
+			fs.unlink(path.join(dd, file), err => {
+				if (err) throw err;
+			});
+		}
+	});
+}
+clean_temp(); // clean files at startup
+
+function sleep(ms) {
+	return new Promise((resolve) => {
+		setTimeout(resolve, ms);
+	});
+}
