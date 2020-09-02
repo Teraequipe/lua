@@ -4,6 +4,10 @@ const fs = require('fs');
 // require the discord.js module
 const Discord = require('discord.js');
 
+module.exports = {
+	executeCommand: executeCommand
+  }
+
 // require config.json credenciais
 const { prefix, token } = require('./config.json');
 // create a new Discord client
@@ -43,18 +47,6 @@ client.on('message', message => {
 	const command = client.commands.get(commandName)
 		|| client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
 
-	if (!command) return;
-
-	if (command.args && !args.length) {
-		let reply = `Hmm, você precisa me dizer mais argumentos, ${message.author}!   :no_mouth: `;
-
-		if (command.usage) {
-			reply += `\nEntão, o uso correto seria: \`${prefix}${command.name} ${command.usage}\``;
-		}
-
-		return message.channel.send(reply);
-	}
-
 	if (!cooldowns.has(command.name)) {
 		cooldowns.set(command.name, new Discord.Collection());
 	}
@@ -77,6 +69,27 @@ client.on('message', message => {
 	timestamps.set(message.author.id, now);
 	setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
 
+
+	executeCommand(message, commandName, args);
+});
+
+function executeCommand(message, commandName, args) {
+	const command = client.commands.get(commandName)
+		|| client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
+
+	if (!command) return;
+
+	if (command.args && !args.length) {
+		let reply = `Hmm, você precisa me dizer mais argumentos, ${message.author}!   :no_mouth: `;
+
+		if (command.usage) {
+			reply += `\nEntão, o uso correto seria: \`${prefix}${command.name} ${command.usage}\``;
+		}
+
+		return message.channel.send(reply);
+	}
+
+	
 	try {
 		command.execute(message, args);
 	}
@@ -84,8 +97,9 @@ client.on('message', message => {
 		console.error(error);
 		message.reply('Hmmm, não identifiquei o seu comando :sad:!');
 	}
+}
 
-});
+
 client.on('guildMemberAdd', async member => {
 	const channel = member.guild.channels.cache.find(ch => ch.name === 'geral');
 	if (!channel) return;

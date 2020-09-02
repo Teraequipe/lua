@@ -1,9 +1,9 @@
-const { prefix, wit_key } = require('../config.json');
+const { prefix, wit_key, voice_prefix } = require('../config.json');
 // const Discord = require('discord.js');
 const fs = require('fs');
 const util = require('util');
 const path = require('path');
-
+const index = require('../index');
 
 module.exports = {
 	name: 'join',
@@ -103,15 +103,22 @@ module.exports = {
 						try {
 							convert_audio(infile, outfile, async () => {
 								// console.log('convertemos');
-								const out = await transcribe_witai(outfile);
+								const outRaw = await transcribe_witai(outfile);
+								const out = outRaw.toLowerCase();
 								console.log(out);
-								if(out === '') return;
-								try{
-									message.channel.send(out);
-								}
-								catch{
-									console.log('erro enviar mensagem');
-								}
+								if(out == '') return;
+								if (!out.startsWith(voice_prefix) ) return;
+
+								const voice_args = out.slice(voice_prefix.length).trim().split(' ');
+								const voice_commandName = voice_args.shift().toLowerCase();
+								console.log(voice_commandName)
+								index.executeCommand(message, voice_commandName, voice_args);
+								// try{
+								// 	// await message.channel.send(out);
+								// }
+								// catch{
+								// 	console.log('erro enviar mensagem');
+								// }
 							});
 						}
 
@@ -188,11 +195,11 @@ async function convert_audio(infile, outfile, cb) {
 			streamin.close();
 			cb();
 		});
-		// command.on('error', function(err, stdout, stderr) {
-		// 	console.log('Cannot process audio: ' + err.message);
-		// 	console.log('Sox Command Stdout: ', stdout);
-		// 	console.log('Sox Command Stderr: ', stderr);
-		// });
+		command.on('error', function(err, stdout, stderr) {
+			console.log('Cannot process audio: ' + err.message);
+			console.log('Sox Command Stdout: ', stdout);
+			console.log('Sox Command Stderr: ', stderr);
+		});
 
 		command.run();
 	}
@@ -205,7 +212,7 @@ async function convert_audio(infile, outfile, cb) {
 let witAI_lastcallTS = null;
 const witClient = require('node-witai-speech');
 async function transcribe_witai(file) {
-	console.log('transcribe');
+	// console.log('transcribe');
 	try {
 		// ensure we do not send more than one request per second
 		if (witAI_lastcallTS != null) {
@@ -222,7 +229,7 @@ async function transcribe_witai(file) {
 	}
 
 	try {
-		console.log('transcribe_witai');
+		// console.log('transcribe_witai');
 		const extractSpeechIntent = util.promisify(witClient.extractSpeechIntent);
 		const stream = fs.createReadStream(file);
 		const output = await extractSpeechIntent(wit_key, stream, 'audio/wav');
