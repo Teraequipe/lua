@@ -1,10 +1,8 @@
 const { prefix, wit_key } = require('../config.json');
-const Discord = require('discord.js');
-const ffmpeg = require('ffmpeg');
+// const Discord = require('discord.js');
 const fs = require('fs');
 const util = require('util');
 const path = require('path');
-const { Readable, Transform } = require('stream');
 
 
 module.exports = {
@@ -14,11 +12,11 @@ module.exports = {
 	usage: '<usuario>',
 	args: false,
 
-	async execute(message, args) {
-		const mapKey = message.guild.id;
+	async execute(message) {
+		// const mapKey = message.guild.id;
 
 		const comando = message.content.slice(prefix.length).trim().split(' ');
-	    const commandName = comando.shift().toLowerCase();
+		const commandName = comando.shift().toLowerCase();
 
 		// console.log(commandName);
 		if (!message.member.voice.channelID) {
@@ -48,7 +46,7 @@ module.exports = {
 		}
 		// então ela vem pra ca
 		const connection = await message.member.voice.channel.join();
-	 	// const broadcast = connection.createBroadcast();
+		// const broadcast = connection.createBroadcast();
 
 		// console.log(require('path'));
 		await playFile(connection, require('path').join(__dirname, '../audio/ola.mp3'));
@@ -81,8 +79,9 @@ module.exports = {
 			audioStream.on('end', async () => {
 				const stats = fs.statSync(filename);
 				const fileSizeInBytes = stats.size;
-				const duration = fileSizeInBytes / 48000 / 4;	// duração do audio
-				console.log('duration: ' + duration);
+				// duração do audio
+				const duration = fileSizeInBytes / 48000 / 4;
+				// console.log('duration: ' + duration);
 
 				// filtra audios muito curtos ou muito longos
 
@@ -103,18 +102,24 @@ module.exports = {
 						// converte de estereo para mono
 						try {
 							convert_audio(infile, outfile, async () => {
-								console.log('convertemos');
-								let out = await transcribe_witai(outfile);
-                           		console.log(out)
-                            	await message.channel.send(out);
+								// console.log('convertemos');
+								const out = await transcribe_witai(outfile);
+								console.log(out);
+								if(out === '') return;
+								try{
+									message.channel.send(out);
+								}
+								catch{
+									console.log('erro enviar mensagem');
+								}
 							});
 						}
 
 
 						catch (e) {
 							console.log('tmpraw rename: ' + e);
-						
-							
+
+
 						}
 
 					}
@@ -133,7 +138,7 @@ async function playFile(connection, filePath) {
 	return new Promise((resolve, reject) => {
 		const dispatcher = connection.play(filePath);
 		dispatcher.setVolume(1);
-		console.log('dentro');
+		// console.log('dentro');
 		dispatcher.on('start', () => {
 			console.log('Playing');
 		});
@@ -161,10 +166,10 @@ async function playFile(connection, filePath) {
 // }
 async function convert_audio(infile, outfile, cb) {
 	try {
-		let SoxCommand = require('sox-audio');
-		let command = SoxCommand();
-		streamin = fs.createReadStream(infile);
-		streamout = fs.createWriteStream(outfile);
+		const SoxCommand = require('sox-audio');
+		const command = SoxCommand();
+		const streamin = fs.createReadStream(infile);
+		const streamout = fs.createWriteStream(outfile);
 		command.input(streamin)
 			.inputSampleRate(48000)
 			.inputEncoding('signed')
@@ -183,16 +188,16 @@ async function convert_audio(infile, outfile, cb) {
 			streamin.close();
 			cb();
 		});
-		command.on('error', function(err, stdout, stderr) {
-			console.log('Cannot process audio: ' + err.message);
-			console.log('Sox Command Stdout: ', stdout);
-			console.log('Sox Command Stderr: ', stderr);
-		});
+		// command.on('error', function(err, stdout, stderr) {
+		// 	console.log('Cannot process audio: ' + err.message);
+		// 	console.log('Sox Command Stdout: ', stdout);
+		// 	console.log('Sox Command Stderr: ', stderr);
+		// });
 
 		command.run();
 	}
 	catch (e) {
-		console.log('convert_audio: ' + e);
+		// console.log('convert_audio: ' + e);
 	}
 }
 
@@ -200,40 +205,46 @@ async function convert_audio(infile, outfile, cb) {
 let witAI_lastcallTS = null;
 const witClient = require('node-witai-speech');
 async function transcribe_witai(file) {
-	console.log('transcribe')
-    try {
-        // ensure we do not send more than one request per second
-        if (witAI_lastcallTS != null) {
-            let now = Math.floor(new Date());    
-            while (now - witAI_lastcallTS < 1000) {
-                console.log('sleep')
-                await sleep(100);
-                now = Math.floor(new Date());
-            }
-        }
-    } catch (e) {
-        console.log('transcribe_witai 837:' + e)
-    }
+	console.log('transcribe');
+	try {
+		// ensure we do not send more than one request per second
+		if (witAI_lastcallTS != null) {
+			let now = Math.floor(new Date());
+			while (now - witAI_lastcallTS < 1000) {
+				console.log('sleep');
+				await sleep(100);
+				now = Math.floor(new Date());
+			}
+		}
+	}
+	catch (e) {
+		console.log('transcribe_witai 837:' + e);
+	}
 
-    try {
-        console.log('transcribe_witai')
-        const extractSpeechIntent = util.promisify(witClient.extractSpeechIntent);
-        var stream = fs.createReadStream(file);
-        const output = await extractSpeechIntent(wit_key, stream, "audio/wav")
-        witAI_lastcallTS = Math.floor(new Date());
-        console.log(output)
-        stream.destroy()
-        if (output && '_text' in output && output._text.length)
-            return output._text
-        if (output && 'text' in output && output.text.length)
-            return output.text
-        return output;
-    } catch (e) { console.log('transcribe_witai 851:' + e) }
+	try {
+		console.log('transcribe_witai');
+		const extractSpeechIntent = util.promisify(witClient.extractSpeechIntent);
+		const stream = fs.createReadStream(file);
+		const output = await extractSpeechIntent(wit_key, stream, 'audio/wav');
+		witAI_lastcallTS = Math.floor(new Date());
+		console.log(output);
+		stream.destroy();
+		if (output && '_text' in output && output._text.length) {
+			return output._text;
+		}
+
+		if (output && 'text' in output && output.text.length) {
+			return output.text;
+		}
+		return output;
+	}
+	catch (e) {
+		console.log('transcribe_witai 851:' + e);
+	}
 }
-//////////////////////////////////////////
-//////////////////////////////////////////
-//////////////////////////////////////////
-
+// ////////////////////////////////////////
+// ////////////////////////////////////////
+// ////////////////////////////////////////
 
 
 // funções de limpar o cache
@@ -260,7 +271,8 @@ function clean_temp() {
 		}
 	});
 }
-clean_temp(); // clean files at startup
+// clean files at startup
+clean_temp();
 
 function sleep(ms) {
 	return new Promise((resolve) => {

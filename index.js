@@ -5,7 +5,7 @@ const fs = require('fs');
 const Discord = require('discord.js');
 
 // require config.json credenciais
-const { prefix, token, wit_key } = require('./config.json');
+const { prefix, token } = require('./config.json');
 // create a new Discord client
 const client = new Discord.Client();
 
@@ -99,13 +99,3 @@ client.on('guildMemberAdd', async member => {
 	channel.send(response + welcome);
 });
 
-/*
-const { Wit, log } = require('node-wit');
-
-const wclient = new Wit({
-	accessToken: wit_key,
-	logger: new log.Logger(log.DEBUG), // optional
-});
-console.log(wclient.message('set an alarm tomorrow at 7am'));
-
-*/
