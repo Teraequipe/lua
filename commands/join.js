@@ -66,7 +66,7 @@ module.exports = {
 			const ws = await fs.createWriteStream(filename);
 
 			// this creates a 16-bit signed PCM, stereo 48KHz stream
-			const audioStream = connection.receiver.createStream(user, { mode: 'pcm' });
+			const audioStream = await connection.receiver.createStream(user, { mode: 'pcm' });
 			audioStream.pipe(ws);
 
 			audioStream.on('error', (e) => {
@@ -107,11 +107,12 @@ module.exports = {
 								const out = outRaw.toLowerCase();
 								console.log(out);
 								if(out == '') return;
-								if (!out.startsWith(voice_prefix) ) return;
+								if (!out.startsWith(voice_prefix)) return;
 
 								const voice_args = out.slice(voice_prefix.length).trim().split(' ');
+								// const voice_args = out.trim().split(' ');
 								const voice_commandName = voice_args.shift().toLowerCase();
-								console.log(voice_commandName)
+								console.log(voice_commandName);
 								index.executeCommand(message, voice_commandName, voice_args);
 								// try{
 								// 	// await message.channel.send(out);
@@ -160,17 +161,7 @@ async function playFile(connection, filePath) {
 	});
 }
 
-// var FFmpeg = require('fluent-ffmpeg');
 
-// function convert_audio(infile, outfile){
-// 	streamin = fs.createReadStream(infile);
-// 	streamout = fs.createWriteStream(outfile);
-// 	var command = FFmpeg({
-// 		source: streamin
-// 	}).addOption('-ac', 1)
-// 	.audioFrequency(16000)
-// 	.saveToFile(streamout);
-// }
 async function convert_audio(infile, outfile, cb) {
 	try {
 		const SoxCommand = require('sox-audio');
@@ -193,6 +184,10 @@ async function convert_audio(infile, outfile, cb) {
 		command.on('end', function() {
 			streamout.close();
 			streamin.close();
+			fs.unlink(infile, (err) => {
+				if (err) throw err;
+				console.log('.raw deletado!');
+			});
 			cb();
 		});
 		command.on('error', function(err, stdout, stderr) {
@@ -236,6 +231,12 @@ async function transcribe_witai(file) {
 		witAI_lastcallTS = Math.floor(new Date());
 		console.log(output);
 		stream.destroy();
+
+		fs.unlink(file, (err) => {
+			if (err) throw err;
+			console.log('.wav deletado!');
+		});
+
 		if (output && '_text' in output && output._text.length) {
 			return output._text;
 		}
