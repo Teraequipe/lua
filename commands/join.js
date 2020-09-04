@@ -7,12 +7,12 @@ const index = require('../index');
 
 module.exports = {
 	name: 'join',
-	aliases: ['leave'],
+	aliases: ['leave','entrar','sair','tts'],
 	description: 'só agradece',
 	usage: '<usuario>',
 	args: false,
 
-	async execute(message) {
+	async execute(message, args) {
 		// const mapKey = message.guild.id;
 
 		const comando = message.content.slice(prefix.length).trim().split(' ');
@@ -23,8 +23,13 @@ module.exports = {
 			message.reply('Opa! Você precisa estar em um canal de voz :headphones: ');
 			return;
 		}
+		// console.log(commandName);
+		// if (commandName === 'tts'){
+		// 		talk(args.join(' '));
+		// 	return;
+		// }
 
-		if (commandName === 'join') {
+		if (commandName === 'join' || commandName === 'entrar') {
 			if (!message.guild.me.voice.channel) {
 				// await message.member.voice.channel.join();
 				message.reply('A Mãe tá on!');
@@ -34,7 +39,7 @@ module.exports = {
 				return;
 			}
 		}
-		else if(commandName === 'leave') {
+		else if(commandName === 'leave' || commandName === 'sair') {
 			if (message.guild.me.voice.channel) {
 				message.guild.me.voice.channel.leave();
 				message.reply('Desconectado.');
@@ -49,8 +54,17 @@ module.exports = {
 		// const broadcast = connection.createBroadcast();
 
 		// console.log(require('path'));
-		await playFile(connection, require('path').join(__dirname, '../audio/ola.mp3'));
+		// await playFile(connection, require('path').join(__dirname, '../audio/ola.mp3'));
 		console.log('?');
+		
+
+		if (commandName === 'tts'){
+			talk(connection, args.join(' '));
+			return;
+		}
+		else{
+			talk(connection, 'A mae ta on!')
+		}
 
 		connection.on('speaking', async (user, speaking) => {
 			if (speaking) {
@@ -63,11 +77,11 @@ module.exports = {
 			}
 			// cria o diretorio temporario de armazenamento
 			const filename = './temp/audio_' + user.username.replace(/[^a-z0-9]/gi, '_').toLowerCase() + '_' + Date.now() + '.tmp';
-			const ws = await fs.createWriteStream(filename);
+			const ws = fs.createWriteStream(filename);
 
 			// this creates a 16-bit signed PCM, stereo 48KHz stream
 			const audioStream = await connection.receiver.createStream(user, { mode: 'pcm' });
-			audioStream.pipe(ws);
+			await audioStream.pipe(ws);
 
 			audioStream.on('error', (e) => {
 				console.log('audioStream: ' + e);
@@ -103,10 +117,15 @@ module.exports = {
 						try {
 							convert_audio(infile, outfile, async () => {
 								// console.log('convertemos');
-								const outRaw = await transcribe_witai(outfile);
-								const out = outRaw.toLowerCase();
+								let out = await transcribe_witai(outfile);
+								try{
+									out = out.toLowerCase();
+								}
+								catch{
+									// console.log('erro out');
+									return;
+								}
 								console.log(out);
-								if(out == '') return;
 								if (!out.startsWith(voice_prefix)) return;
 
 								const voice_args = out.slice(voice_prefix.length).trim().split(' ');
@@ -148,10 +167,10 @@ async function playFile(connection, filePath) {
 		dispatcher.setVolume(1);
 		// console.log('dentro');
 		dispatcher.on('start', () => {
-			console.log('Playing');
+			// console.log('Playing');
 		});
 		dispatcher.on('finish', () => {
-			console.log('end');
+			// console.log('end');
 			resolve();
 		});
 		dispatcher.on('error', (error) => {
@@ -286,4 +305,29 @@ function sleep(ms) {
 	return new Promise((resolve) => {
 		setTimeout(resolve, ms);
 	});
+}
+
+
+const Say = require('say').Say
+const say = new Say('win32')
+
+async function talk(connection, texto) {
+	
+	const path_audio = './audio/voz.wav';
+	say.export(texto, 'Microsoft Maria Desktop', 1, path_audio, (err) => {
+		if (err) {
+			  return console.error(err)
+			}
+		console.log('Text has been saved to voz.wav.')
+		playFile(connection, require('path').join(__dirname, '../audio/voz.wav'));
+		})
+	// Use default system voice and speed
+	// say.speak(texto);
+	
+	//  say.getInstalledVoices((err, voices) => {
+	// 		console.log(voices)
+	//  });
+	
+	
+
 }
