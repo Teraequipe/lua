@@ -5,6 +5,8 @@ const util = require('util');
 const path = require('path');
 const index = require('../index');
 
+const lua = require('../utils/talk_play');
+
 module.exports = {
 	name: 'join',
 	aliases: ['leave','entrar','sair','tts'],
@@ -59,11 +61,11 @@ module.exports = {
 		
 
 		if (commandName === 'tts'){
-			talk(connection, args.join(' '));
+			lua.talk(connection, args.join(' '));
 			return;
 		}
 		else{
-			talk(connection, 'A mae ta on!')
+			lua.talk(connection, 'A mae ta on!')
 		}
 
 		connection.on('speaking', async (user, speaking) => {
@@ -160,26 +162,6 @@ module.exports = {
 
 	},
 };
-
-async function playFile(connection, filePath) {
-	return new Promise((resolve, reject) => {
-		const dispatcher = connection.play(filePath);
-		dispatcher.setVolume(1);
-		// console.log('dentro');
-		dispatcher.on('start', () => {
-			// console.log('Playing');
-		});
-		dispatcher.on('finish', () => {
-			// console.log('end');
-			resolve();
-		});
-		dispatcher.on('error', (error) => {
-			console.error(error);
-			reject(error);
-		});
-	});
-}
-
 
 async function convert_audio(infile, outfile, cb) {
 	try {
@@ -307,27 +289,3 @@ function sleep(ms) {
 	});
 }
 
-
-const Say = require('say').Say
-const say = new Say('win32')
-
-async function talk(connection, texto) {
-	
-	const path_audio = './audio/voz.wav';
-	say.export(texto, 'Microsoft Maria Desktop', 1, path_audio, (err) => {
-		if (err) {
-			  return console.error(err)
-			}
-		console.log('Text has been saved to voz.wav.')
-		playFile(connection, require('path').join(__dirname, '../audio/voz.wav'));
-		})
-	// Use default system voice and speed
-	// say.speak(texto);
-	
-	//  say.getInstalledVoices((err, voices) => {
-	// 		console.log(voices)
-	//  });
-	
-	
-
-}
