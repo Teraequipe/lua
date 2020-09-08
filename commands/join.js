@@ -9,10 +9,12 @@ const lua = require('../utils/talk_play');
 
 module.exports = {
 	name: 'join',
-	aliases: ['leave','entrar','sair','tts'],
+	aliases: ['leave', 'entrar', 'sair', 'tts'],
 	description: 'só agradece',
 	usage: '<usuario>',
+	guildOnly: true,
 	args: false,
+	needsVoice: true,
 
 	async execute(message, args) {
 		// const mapKey = message.guild.id;
@@ -21,10 +23,7 @@ module.exports = {
 		const commandName = comando.shift().toLowerCase();
 
 		// console.log(commandName);
-		if (!message.member.voice.channelID) {
-			message.reply('Opa! Você precisa estar em um canal de voz :headphones: ');
-			return;
-		}
+		
 		// console.log(commandName);
 		// if (commandName === 'tts'){
 		// 		talk(args.join(' '));
@@ -58,14 +57,13 @@ module.exports = {
 		// console.log(require('path'));
 		// await playFile(connection, require('path').join(__dirname, '../audio/ola.mp3'));
 		console.log('?');
-		
 
-		if (commandName === 'tts'){
+		if (commandName === 'tts') {
 			lua.talk(connection, args.join(' '));
 			return;
 		}
 		else{
-			lua.talk(connection, 'A mae ta on!')
+			lua.talk(connection, 'A mae ta on!');
 		}
 
 		connection.on('speaking', async (user, speaking) => {

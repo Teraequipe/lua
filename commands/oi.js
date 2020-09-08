@@ -3,8 +3,8 @@ module.exports = {
 	description: 'Olá!',
 	usage: '<user> <role>',
 	args: false,
-	execute(message, args) {
-		// message.channel.send(`Oi ${message.author}`);
-		message.channel.send(`/tts oi!`);
+	execute(message) {
+		message.channel.send(`Oi ${message.author}`);
+		// message.channel.send(`/tts oi!`);
 	},
 };

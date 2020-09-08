@@ -28,6 +28,7 @@
     "node-wit": "^6.0.0",
     "node-witai-speech": "^1.0.2",
     "pokedex-promise-v2": "^3.2.0",
+    "remove-accents": "^0.4.2",
     "say": "^0.16.0",
     "sox": "^0.1.0",
     "sox-audio": "^0.3.0",

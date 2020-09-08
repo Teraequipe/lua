@@ -5,8 +5,8 @@ const fs = require('fs');
 const Discord = require('discord.js');
 
 module.exports = {
-	executeCommand: executeCommand
-  }
+	executeCommand: executeCommand,
+};
 
 // require config.json credenciais
 const { prefix, token } = require('./config.json');
@@ -43,12 +43,12 @@ client.on('message', message => {
 
 	const args = message.content.slice(prefix.length).trim().split(' ');
 	const commandName = args.shift().toLowerCase();
-	
+
 	const command = client.commands.get(commandName)
 		|| client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
 
 	if (!command) return;
-	
+
 	if (!cooldowns.has(command.name)) {
 		cooldowns.set(command.name, new Discord.Collection());
 	}
@@ -81,6 +81,15 @@ function executeCommand(message, commandName, args) {
 
 	if (!command) return;
 
+	if (command.guildOnly && message.channel.type === 'dm') {
+		return message.reply('Ueeepa! esse comando é somente para servidores!');
+	}
+
+	if (command.needsVoice && !message.member.voice.channelID) {
+		message.reply('Opa! Você precisa estar em um canal de voz :headphones: ');
+		return;
+	}
+
 	if (command.args && !args.length) {
 		let reply = `Hmm, você precisa me dizer mais argumentos, ${message.author}!   :no_mouth: `;
 
@@ -91,7 +100,6 @@ function executeCommand(message, commandName, args) {
 		return message.channel.send(reply);
 	}
 
-	
 	try {
 		command.execute(message, args);
 	}

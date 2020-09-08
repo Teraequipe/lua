@@ -1,11 +1,12 @@
 
 const Say = require('say').Say;
 const say = new Say('win32');
+const accents = require('remove-accents');
+
 
 async function talk(connection, texto) {
-
 	const path_audio = './audio/voz.wav';
-	say.export(texto, 'Microsoft Maria Desktop', 1, path_audio, async (err) => {
+	say.export(accents.remove(texto), 'Microsoft Maria Desktop', 1.2, path_audio, async (err) => {
 		if (err) {
 			return console.error(err);
 		}
