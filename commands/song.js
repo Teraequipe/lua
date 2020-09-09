@@ -108,9 +108,27 @@ async function play(guild, song) {
 	serverQueue.textChannel.send(`Começou a tocar: **${song.title}**`);
 }
 
+function listSong(message, serverQueue) {
+    console.log('Entrou dentro do canal de voz');
+	if (!message.member.voice.channel) {
+		return message.channel.send(
+			'Você deve estar em um canal de voz para pausar a música!',
+		);
+    }
+    
+    let songArray = serverQueue.songs.map(song => {
+        console.log(song.title);
+        return song.title
+    })  
+
+    console.log(songArray);
+    message.channel.send(songArray);
+
+}
+
 module.exports = {
 	name: 'play',
-	aliases: ['stop', 'skip'],
+	aliases: ['stop', 'skip', 'musiclist'],
 	description: 'Play music',
     usage: '<play> <stop> <skip>',
     guildOnly: true,
@@ -133,6 +151,10 @@ module.exports = {
 		}
 		else if (commandName === 'stop') {
 			stop(message, serverQueue);
+			return;
+		}
+		else if (commandName === 'musiclist') {
+			listSong(message, serverQueue);
 			return;
 		}
 		else {
