@@ -14,7 +14,7 @@ module.exports = {
 			return;
 		}
 		nome = message.mentions.users.first();
-		if(args[0] === 'all' || !args[0] ) {
+		if(args[0] === 'all' || !args[0]) {
 			let channel = message.member.voice.channel;
 			for (let member of channel.members) {
 				member[1].voice.setMute(false);

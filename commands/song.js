@@ -1,4 +1,4 @@
-const { prefix } = require("../config.json")
+const { prefix } = require('../config.json');
 
 const ytdl = require('ytdl-core-discord');
 const ytsr = require('ytsr');
@@ -27,7 +27,9 @@ async function playSong(message, serverQueue, songName) {
 		.then(resp => {
 			return resp.items[0].link;
 		})
-		.catch(()=>{});
+		.catch(error =>{
+			console.error(error);
+		});
 
 	const songInfo = await ytdl.getInfo(songURL);
 
@@ -109,20 +111,24 @@ async function play(guild, song) {
 }
 
 function listSong(message, serverQueue) {
-    console.log('Entrou dentro do canal de voz');
+	console.log('Entrou dentro do canal de voz');
 	if (!message.member.voice.channel) {
 		return message.channel.send(
 			'Você deve estar em um canal de voz para pausar a música!',
 		);
-    }
-    
-    let songArray = serverQueue.songs.map(song => {
-        console.log(song.title);
-        return song.title
-    })  
+	}
 
-    console.log(songArray);
-    message.channel.send(songArray);
+	const songArray = serverQueue.songs.map(song => {
+		console.log(song.title);
+		return '> ' + song.title;
+	});
+
+	console.log(songArray);
+	message.channel.send(
+		```json \n
+		songArray \n
+		```
+		);
 
 }
 
@@ -130,9 +136,9 @@ module.exports = {
 	name: 'play',
 	aliases: ['stop', 'skip', 'musiclist'],
 	description: 'Play music',
-    usage: '<play> <stop> <skip>',
-    guildOnly: true,
-    needsVoice: true,
+	usage: '<play> <stop> <skip>',
+	guildOnly: true,
+	needsVoice: true,
 	async execute(message, args) {
 
 		const commandName = message.content.slice(prefix.length).trim().split(' ')[0];
