@@ -29,7 +29,7 @@ const cooldowns = new Discord.Collection();
 
 
 client.once('ready', () => {
-	console.log('Ready!');
+	console.log('Pronta para a ação!');
 });
 
 // login to Discord with your app's token
@@ -37,8 +37,6 @@ client.login(token);
 
 
 client.on('message', message => {
-	console.log(message.content);
-
 	if (!message.content.startsWith(prefix) || message.author.bot) return;
 
 	const args = message.content.slice(prefix.length).trim().split(' ');
