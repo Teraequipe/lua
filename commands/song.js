@@ -66,7 +66,7 @@ async function playSong(message, serverQueue, songName) {
 	}
 	else {
 		serverQueue.songs.push(song);
-		return message.channel.send(`${song.title} foi adicionada a queue!`);
+		return message.channel.send(`> **${song.title}** foi adicionada a queue!`);
 	}
 }
 
@@ -107,28 +107,27 @@ async function play(guild, song) {
 		})
 		.on('error', error => console.error(error));
 	dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
-	serverQueue.textChannel.send(`Começou a tocar: **${song.title}**`);
+	serverQueue.textChannel.send(`> Começou a tocar: **${song.title}**`);
 }
 
 function listSong(message, serverQueue) {
-	console.log('Entrou dentro do canal de voz');
 	if (!message.member.voice.channel) {
 		return message.channel.send(
-			'Você deve estar em um canal de voz para pausar a música!',
-		);
+			```diff \n
+			'Você deve estar em um canal de voz para pausar a música!' \n
+			```
+			);
 	}
 
 	const songArray = serverQueue.songs.map(song => {
 		console.log(song.title);
-		return '> ' + song.title;
+		return (`> **${song.title}**\n`);
 	});
 
-	console.log(songArray);
 	message.channel.send(
-		```json \n
-		songArray \n
-		```
-		);
+		( 
+		songArray
+		));
 
 }
 
