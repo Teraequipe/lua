@@ -43,7 +43,7 @@ module.exports = {
 		else if(commandName === 'leave' || commandName === 'sair') {
 			if (message.guild.me.voice.channel) {
 				message.guild.me.voice.channel.leave();
-				message.reply('Desconectado.');
+				message.reply('Desconectadíssima.');
 				return;
 			}
 			else {

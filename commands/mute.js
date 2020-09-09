@@ -17,7 +17,7 @@ module.exports = {
 		if(args[0] === 'all' || !args[0] ) {
 			let channel = message.member.voice.channel;
 			for (let member of channel.members) {
-				await member[1].voice.setMute(true);
+				member[1].voice.setMute(true);
 			}
 			// setTimeout(() => {
 			// 	for (let member of channel.members) {

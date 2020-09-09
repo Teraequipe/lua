@@ -17,7 +17,7 @@ module.exports = {
 		if(args[0] === 'all' || !args[0] ) {
 			let channel = message.member.voice.channel;
 			for (let member of channel.members) {
-				await member[1].voice.setMute(false);
+				member[1].voice.setMute(false);
 			}
 			// setTimeout(() => {
 			// 	for (let member of channel.members) {
@@ -27,7 +27,7 @@ module.exports = {
 		}
 		else if(message.mentions.users.first()) {
 			const member = message.guild.members.cache.find(member => member.id === nome.id); 
-			console.log(nome);
+			// console.log(nome);
 			member.voice.setMute(false);
 		}
 		else{
