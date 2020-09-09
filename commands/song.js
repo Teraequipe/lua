@@ -1,3 +1,5 @@
+const { prefix } = require("../config.json")
+
 const ytdl = require('ytdl-core-discord');
 const ytsr = require('ytsr');
 
@@ -6,15 +8,18 @@ const queue = new Map();
 async function playSong(message, serverQueue, songName) {
 
 	const voiceChannel = message.member.voice.channel;
-	if (!voiceChannel) {
-		return message.channel.send(
-			'You need to be in a voice channel to play music!',
-		);
-	}
+
+	// A confirmação sea alguém está no canal de voz está sendo feita no index
+	// if (!voiceChannel) {
+	// 	return message.channel.send(
+	// 		'Você precisa estar em um canal de voz para eu cantar pra você ;)',
+	// 	);
+	// }
+
 	const permissions = voiceChannel.permissionsFor(message.client.user);
 	if (!permissions.has('CONNECT') || !permissions.has('SPEAK')) {
 		return message.channel.send(
-			'I need the permissions to join and speak in your voice channel!',
+			'Eu preciso de permissão para entrar e falar no canal de voz que você está!!',
 		);
 	}
 
@@ -26,14 +31,10 @@ async function playSong(message, serverQueue, songName) {
 
 	const songInfo = await ytdl.getInfo(songURL);
 
-	console.log('SongInfo: ' + songInfo);
-
 	const song = {
 		title: songInfo.title,
 		url: songInfo.video_url,
 	};
-
-	console.log(song);
 
 	if (!serverQueue) {
 		const queueContruct = {
@@ -63,24 +64,24 @@ async function playSong(message, serverQueue, songName) {
 	}
 	else {
 		serverQueue.songs.push(song);
-		return message.channel.send(`${song.title} has been added to the queue!`);
+		return message.channel.send(`${song.title} foi adicionada a queue!`);
 	}
 }
 
 function skip(message, serverQueue) {
 	if (!message.member.voice.channel) {
 		return message.channel.send(
-			'You have to be in a voice channel to stop the music!',
+			'Você deve estar em um canal de voz para passar a música!',
 		);
 	}
-	if (!serverQueue) {return message.channel.send('There is no song that I could skip!');}
+	if (!serverQueue) {return message.channel.send('Não tem nenhuma música para ser passada!');}
 	serverQueue.connection.dispatcher.end();
 }
 
 function stop(message, serverQueue) {
 	if (!message.member.voice.channel) {
 		return message.channel.send(
-			'You have to be in a voice channel to stop the music!',
+			'Você deve estar em um canal de voz para pausar a música!',
 		);
 	}
 	serverQueue.songs = [];
@@ -104,22 +105,21 @@ async function play(guild, song) {
 		})
 		.on('error', error => console.error(error));
 	dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
-	serverQueue.textChannel.send(`Start playing: **${song.title}**`);
+	serverQueue.textChannel.send(`Começou a tocar: **${song.title}**`);
 }
 
 module.exports = {
-	name: 'song',
-	aliases: ['Song'],
+	name: 'play',
+	aliases: ['stop', 'skip'],
 	description: 'Play music',
-	args: true,
     usage: '<play> <stop> <skip>',
     guildOnly: true,
     needsVoice: true,
 	async execute(message, args) {
 
-		const commandName = args.shift();
+		const commandName = message.content.slice(prefix.length).trim().split(' ')[0];
+		// const commandName = args.shift().toLowerCase();
 		const songName = args.join(' ');
-		console.log(songName);
 
 		const serverQueue = queue.get(message.guild.id);
 
@@ -136,7 +136,7 @@ module.exports = {
 			return;
 		}
 		else {
-			message.channel.send('You need to enter a valid command!');
+			message.channel.send('Você precisa passar um comando válido!');
 		}
 
 	},
