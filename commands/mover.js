@@ -1,6 +1,8 @@
+const mention = require('../utils/mention.js');
+
 module.exports = {
 	name: 'mover',
-	aliases: ['mover', 'move'],
+	aliases: ['move'],
 	description: 'Comando relacionado a mover pessias entre canais de canais.',
     usage: `<nome da pessoa> <canal>`,
     guildOnly: true,
@@ -9,18 +11,25 @@ module.exports = {
 
         const voiceChannel = message.member.voice.channel;
         const voiceChannels = message.channel.guild.channels
-        const vChannelName = args[0];
+        const vChannelName = args[1];
+        const personMentionedID = mention(args[0]);
 
-        console.log(voiceChannel);
-        console.log(voiceChannels.find(u => u.name === 'vChannelName'));
+        voiceChannels.cache.map(channel => {
+            if(channel.type === 'voice' && channel.name == vChannelName){
+                
+                if (message.member.hasPermission('MOVE_MEMBERS') && voiceChannel) {
+                    message.guild.members
+                        .fetch(`${personMentionedID}`)
+                            .then( persoa => persoa.voice.setChannel(channel.id))
+                    
+                
+                } else {
+                    return message.reply('você não tem permissão para mudar alguém de canal');
+                }
+                
+            }
+        });
 
-        if (message.member.hasPermission('MOVE_MEMBERS') && voiceChannel) {
 
-
-            
-            message.member.voice.setChannel();
-        } else {
-            message.reply('você não tem permissão para mudar alguém de canal');
-        }
     }
 }
