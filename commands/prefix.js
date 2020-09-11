@@ -1,5 +1,6 @@
-const { prefix } = require('../config.json');
-const fs = require('fs');
+const Keyv = require('keyv');
+
+const prefixes = new Keyv('sqlite://database.sqlite', { namespace: 'prefixes' });
 
 module.exports = {
 	name: 'prefix',
@@ -8,25 +9,16 @@ module.exports = {
     usage: `<novo prefixo>`,
     guildOnly: true,
     args:  true,
-    execute(message, args){
-        let newPrefix = args[0];
+    async execute(message, args){
 
-        fs.readFile('./config.json', (err, data) => {
-            if (err) {
-                console.error(err);
-                message.reply('Ocorreu um erro. Tente novamente!!!');
-            }
-
-            let configFile = JSON.parse(data.toString());
-
-            configFile.prefix = newPrefix;
-
-            configFile = JSON.stringify(configFile);
-            
-            fs.writeFileSync('./config.json', configFile);
-
-            message.channel.send('O prefixo foi alterado com sucesso.')
-        });
+        if (message.member.hasPermission('ADMINISTRATOR')) {
+            await prefixes.set(message.guild.id, args[0]);
+            return message.channel.send(`Successfully set prefix to \`${args[0]}\``);
+        
+        } else {
+            message.reply('> Você não tem autorização para mudar o meu prefixo. Somente, quem possui a permissão de administrador pode fazer isso.')
+        }
+    
 
 
     }

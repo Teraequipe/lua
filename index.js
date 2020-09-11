@@ -1,6 +1,10 @@
 // require filesystem
 const fs = require('fs');
 
+const Keyv = require('keyv');
+const prefixes = new Keyv('sqlite://database.sqlite', { namespace: 'prefixes' });
+prefixes.on('error', err => console.error('Connection Error', err));
+
 // require the discord.js module
 const Discord = require('discord.js');
 
@@ -9,7 +13,7 @@ module.exports = {
 };
 
 // require config.json credenciais
-const { prefix, token } = require('./config.json');
+const { originalPrefix, token } = require('./config.json');
 // create a new Discord client
 const client = new Discord.Client();
 
@@ -36,8 +40,21 @@ client.once('ready', () => {
 client.login(token);
 
 
-client.on('message', message => {
-	if (!message.content.startsWith(prefix) || message.author.bot) return;
+client.on('message', async message => {
+	var prefix;
+
+	const guildId = await message.channel.guild.id;
+
+	const guildPrefix = await prefixes.get(guildId);
+
+	if (guildPrefix === undefined) {
+		prefix = originalPrefix;
+	} else {
+		prefix = guildPrefix;
+	}
+
+	if (!message.content.startsWith(prefix) || message.author.bot ) return;
+
 
 	const args = message.content.slice(prefix.length).trim().split(' ');
 	const commandName = args.shift().toLowerCase();
