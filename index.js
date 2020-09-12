@@ -13,7 +13,7 @@ module.exports = {
 };
 
 // require config.json credenciais
-const { originalPrefix, token } = require('./config.json');
+const { prefix, token } = require('./config.json');
 // create a new Discord client
 const client = new Discord.Client();
 
@@ -41,22 +41,24 @@ client.login(token);
 
 
 client.on('message', async message => {
-	var prefix;
+	var mainPrefix;
+	
+	const guildId = message.guild.id;
 
-	const guildId = await message.channel.guild.id;
+	console.log(guildId)
 
 	const guildPrefix = await prefixes.get(guildId);
 
 	if (guildPrefix === undefined) {
-		prefix = originalPrefix;
+		mainPrefix = prefix;
 	} else {
-		prefix = guildPrefix;
+		mainPrefix = guildPrefix;
 	}
 
-	if (!message.content.startsWith(prefix) || message.author.bot ) return;
+	if (!message.content.startsWith(mainPrefix) || message.author.bot ) return;
 
 
-	const args = message.content.slice(prefix.length).trim().split(' ');
+	const args = message.content.slice(mainPrefix.length).trim().split(' ');
 	const commandName = args.shift().toLowerCase();
 
 	const command = client.commands.get(commandName)
@@ -87,10 +89,10 @@ client.on('message', async message => {
 	setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
 
 
-	executeCommand(message, commandName, args);
+	executeCommand(message, commandName, args, mainPrefix);
 });
 
-function executeCommand(message, commandName, args) {
+function executeCommand(message, commandName, args, mainPrefix) {
 	const command = client.commands.get(commandName)
 		|| client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
 
@@ -109,7 +111,7 @@ function executeCommand(message, commandName, args) {
 		let reply = `Hmm, você precisa me dizer mais argumentos, ${message.author}!   :no_mouth: `;
 
 		if (command.usage) {
-			reply += `\nEntão, o uso correto seria: \`${prefix}${command.name} ${command.usage}\``;
+			reply += `\nEntão, o uso correto seria: \`${mainPrefix}${command.name} ${command.usage}\``;
 		}
 
 		return message.channel.send(reply);
@@ -134,7 +136,8 @@ client.on('guildMemberAdd', async member => {
 	];
 
 	const response = responses[Math.floor(Math.random() * responses.length)];
-	const welcome = `\n\nMeu nome é *Lua!* Estou aqui para te auxiliar, você pode falar comigo utilizando o prefixo *${prefix}*.\nAproveite!`;
+	const welcome = `\n\nMeu nome é *Lua!* Estou aqui para te auxiliar, você pode falar comigo utilizando o prefixo *${mainPrefix}*.\nAproveite!`;
 	channel.send(response + welcome);
 });
 
+process.on('unhandledRejection', error => console.error('Uncaught Promise Rejection de Novo'));
