@@ -47,8 +47,9 @@ async function playSong(message, serverQueue, songName) {
 
 	// Informações da música
 	const song = {
-		title: songURL.title,
+		title: songURL.title + " / " + songURL.author.name,
 		url: songURL.link,
+		duration: songURL.duration
 	};
 
 	// Confere se ja existe uma queue na guild 
@@ -85,7 +86,7 @@ async function playSong(message, serverQueue, songName) {
 	else {
 		// Adiciona a música na queue 
 		serverQueue.songs.push(song);
-		return message.channel.send(`> **${song.title}** foi adicionada a queue!`);
+		return message.channel.send(`> **${song.title}** foi adicionada a lista!`);
 	}
 }
 
@@ -125,7 +126,10 @@ async function play(guild, song) {
 	}
 
 	try {
-		var ytdlSong = await ytdl(song.url);
+		var ytdlSong = await ytdl(song.url, {
+			quality: 'highestaudio',
+			highWaterMark: 1 << 25
+		});
 		
 	} catch (error) {
 		console.error(err);
@@ -165,7 +169,7 @@ function listSong(message, serverQueue) {
 
 module.exports = {
 	name: 'play',
-	aliases: ['stop', 'parar', 'skip', 'pular', 'queue','fila'],
+	aliases: ['stop', 'p', 'parar', 'skip', 'pular', 'queue','fila'],
 	description: 'Play music',
 	usage: '<play> <stop> <skip>',
 	guildOnly: true,
@@ -183,7 +187,7 @@ module.exports = {
 		const serverQueue = queue.get(message.guild.id);
 
 		// Executa os comandos de acordo com o nome do comando 
-		if (commandName === 'play') {
+		if (commandName === 'play' || commandName === 'p') {
 			playSong(message, serverQueue, songName);
 			return;
 		}
