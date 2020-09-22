@@ -138,4 +138,7 @@ client.on('guildMemberAdd', async member => {
 	channel.send(response + welcome);
 });
 
-process.on('unhandledRejection', error => console.error('Uncaught Promise Rejection'));
+ process.on('unhandledRejection', error => console.error('Uncaught Promise Rejection'));
+
+
+
