@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js",
+    "start": "node .",
     "knex:migrate": "npx knex --knexfile knexfile.js migrate:latest"
   },
   "repository": {
