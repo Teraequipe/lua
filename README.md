@@ -29,6 +29,9 @@ Se digitar heroku ps, é possível perceber que a aplicação está em prossedim
 
 Se todos os passos tiverem sido efetuados corretamente, agora o bot estará rodando nos servidores heroku.
 
+    É importante lembrar que caso haja algum arquivo importante, como um arquivo de configuração, na lista de gitignore, ele deve ser retirado para que possa ser passado para o git e depois para o servidor do heroku para ser utilizado no bot. 
+    Se estiver usando o github não esqueça de retornar esses arquivos que não podem ser públicos para o gitignore.
+
 #### Debug heroku
 * `Error R10 (Boot timeout)`: esse erro ocorre pois a mudança de web para worker não foi efetuada e o heroku está tentando efetuar protocolos web no bot. Siga os passos descritos na 'utilização' acima.
 * Tirar o [dyno web](https://stackoverflow.com/a/35542473) e estabelecer o [worker](https://devcenter.heroku.com/articles/procfile#scaling-a-process-type).
