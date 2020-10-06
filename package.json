@@ -6,6 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node .",
+    "dev": "nodemon index.js",
     "knex:migrate": "npx knex --knexfile knexfile.js migrate:latest"
   },
   "repository": {

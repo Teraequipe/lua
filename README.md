@@ -5,10 +5,21 @@ A Lua é a primeira bot de discord da Equipe Tera! Ela é desenvolvida com o int
 * Instalai SQLite `npm install sqlite3`;
 * Criei um arquivo `database.sqlite`;
 * Instalei o Keyv `npm install keyv`;
-* Segui o guia no Discord.js e a documentação do Keyv;
+* Segui o [guia no Discord.js](https://discordjs.guide/keyv/#usage-2) e a [documentação do Keyv](https://www.npmjs.com/package/keyv);
 
 
 ## Debug
+### Configuração
+* Foi adicionada o arquivo nodemon.json para que o nodemon executasse o comando node junto com a configuração de inspetor.
+* Foi adicionado também o arquivo launch.json. Nele:
+    * Foi alterado o tipo de request de launch para attach, porque assim, quando o debugger for inicializado, ele não tentará abrir uma janela do navegador ou reiniciar a aplicação;
+    * Foi adicionado o protocolo para inspeção para que o debugger possa analisar o programa em andamento;
+    * Foi alterado a configuração de restart para true para que quando a aplicação seja reiniciada pelo nodemon, o debugger se reconecte à porta de acesso da aplicação;
+    * E retirou-se o program já que com a mudança do request, o debugger não irá inicializar a aplicação.
+
+Todo o processo de configuração do debugger foi efetuado a partir do seguinte video da [Rocketseat](https://github.com/Rocketseat): [Debug de aplicações Node.js com VSCode | Code/Drops #11](https://www.youtube.com/watch?v=bVAhNaxBEjM&ab_channel=Rocketseat).
+
+### Erros aleatórios
 * Existe um erro específico que tem um tratamento no guia do [Discord.js](https://discordjs.guide/popular-topics/miscellaneous-examples.html#catching-unhandledpromiserejectionwarnings) que é o erro `UnhandledPromiseRejectionWarnings`;
 
 ## Deploy
