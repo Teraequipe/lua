@@ -24,10 +24,10 @@ Todo o processo de configuração do debugger foi efetuado a partir do seguinte 
 
 ## Deploy
 ### Heroku 
-    O heroku possui um pacote gratuito para estudantes com o email institucional e não necessita de registro de cartão de crédito para começar a utilizar os pacotes gratuitos.
+O heroku possui um pacote gratuito para estudantes com o email institucional e não necessita de registro de cartão de crédito para começar a utilizar os pacotes gratuitos.
 
 #### Instalação
-    Como até o momento está sendo utilizado o node para o desenvolvimento do bot, é mais fácil utilizar o comando `npm install heroku -g` para instalar o heroku globalmente.
+Como até o momento está sendo utilizado o node para o desenvolvimento do bot, é mais fácil utilizar o comando `npm install heroku -g` para instalar o heroku globalmente.
 
 #### Utilização 
 Usar o heruko é muito simples, porém, para aplicações que não são web, algumas mudanças devem ser efetuadas pois o heroku tem procedimentos padrões para web que não são necessárias e inclusive acabam causando erros no bot.
@@ -40,8 +40,9 @@ Se digitar heroku ps, é possível perceber que a aplicação está em prossedim
 
 Se todos os passos tiverem sido efetuados corretamente, agora o bot estará rodando nos servidores heroku.
 
-    É importante lembrar que caso haja algum arquivo importante, como um arquivo de configuração, na lista de gitignore, ele deve ser retirado para que possa ser passado para o git e depois para o servidor do heroku para ser utilizado no bot. 
-    Se estiver usando o github não esqueça de retornar esses arquivos que não podem ser públicos para o gitignore.
+É importante lembrar que caso haja algum arquivo importante, como um arquivo de configuração, na lista de gitignore, ele deve ser retirado para que possa ser passado para o git e depois para o servidor do heroku para ser utilizado no bot. 
+
+Se estiver usando o github não esqueça de retornar esses arquivos que não podem ser públicos para o gitignore.
 
 #### Debug heroku
 * `Error R10 (Boot timeout)`: esse erro ocorre pois a mudança de web para worker não foi efetuada e o heroku está tentando efetuar protocolos web no bot. Siga os passos descritos na 'utilização' acima.
