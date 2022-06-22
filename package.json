@@ -38,7 +38,7 @@
     "sox": "^0.1.0",
     "sox-audio": "^0.3.0",
     "sox-static": "^1.0.0",
-    "sqlite3": "^5.0.0",
+    "sqlite3": "^5.0.3",
     "underscore": "^1.11.0",
     "wikijs": "^6.0.1",
     "wolfram-alpha-api": "https://products.wolframalpha.com/api/libraries/javascript/wolfram-alpha-api-1.0.0-rc.1.tgz",
