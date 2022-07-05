@@ -20,7 +20,7 @@
   },
   "homepage": "https://github.com/Teraequipe/lua#readme",
   "dependencies": {
-    "@discordjs/opus": "^0.3.2",
+    "@discordjs/opus": "^0.8.0",
     "@keyv/sqlite": "^2.0.2",
     "discord.js": "^12.3.1",
     "ffmpeg": "0.0.4",
